@@ -1,11 +1,21 @@
 # Vega Dilinin Gramarı
 
+## Veri Tipleri
+
+**Sayısal/Integer** = `sayisal`
+
+**Dize/String** = `dize`
+
+---
+
 ## Değişkenler
 
 **Değişken oluşturma/tanımlama**:
 
 ```vtl
 sayisal x = 10
+
+dize y = "Merhaba, dünya!"
 ```
 
 ---
@@ -16,27 +26,25 @@ sayisal x = 10
 
 # Yorum ekleme
 
-## ekrana veri yazdırma
+## Ekrana veri yazdırma
 
 yazdir "Merhaba, dünya!"
 
-## kullanıcıdan veri alma
+## Kullanıcıdan veri alma
 
 x = veri "İsminiz?"
 
 ## Karakter Hesaplama
 
-uzunluk "Merhaba dünya!"
+uzunluk "Merhaba, dünya!"
 
-##Listeleme Yapmak
+## Listeleme Yapmak
 
-liste 1,abc,3,14
+liste myList = liste.yeni 1,abc,3.14
 
-##Listeye Eleman Ekleme
+## Listeye Eleman Ekleme
 
-liste.ekle "Abc" / liste.ekle 314 / liste.ekle "abc",3.14
-
-
-
+myList.ekle "Abc"
+myList.ekle 314
+myList.ekle "abc",3.14
 ```
-

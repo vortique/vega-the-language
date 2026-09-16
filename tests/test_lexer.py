@@ -27,6 +27,21 @@ class LexerTests(unittest.TestCase):
         self.assertEqual(tokens[1].lexeme, "x")
         self.assertEqual(tokens[3].literal, 10)
 
+    def test_string_declaration(self) -> None:
+        tokens = tokenize('dize mesaj = "Merhaba, dünya!"')
+
+        self.assertEqual(
+            [token.type for token in tokens],
+            [
+                TokenType.DIZE,
+                TokenType.IDENTIFIER,
+                TokenType.EQUAL,
+                TokenType.STRING,
+                TokenType.EOF,
+            ],
+        )
+        self.assertEqual(tokens[3].literal, "Merhaba, dünya!")
+
     def test_print_with_straight_quotes(self) -> None:
         tokens = tokenize('yazdir "Merhaba, dünya!"')
 
@@ -57,6 +72,37 @@ class LexerTests(unittest.TestCase):
         )
         self.assertEqual(tokens[4].literal, 3.5)
         self.assertEqual((tokens[1].line, tokens[1].column), (2, 1))
+
+    def test_list_syntax_and_new_keywords(self) -> None:
+        tokens = tokenize(
+            "liste myList = liste.yeni 1,abc\nmyList.ekle veri \"Değer?\""
+        )
+
+        self.assertEqual(
+            [token.type for token in tokens],
+            [
+                TokenType.LISTE,
+                TokenType.IDENTIFIER,
+                TokenType.EQUAL,
+                TokenType.LISTE,
+                TokenType.DOT,
+                TokenType.YENI,
+                TokenType.NUMBER,
+                TokenType.COMMA,
+                TokenType.IDENTIFIER,
+                TokenType.NEWLINE,
+                TokenType.IDENTIFIER,
+                TokenType.DOT,
+                TokenType.EKLE,
+                TokenType.VERI,
+                TokenType.STRING,
+                TokenType.EOF,
+            ],
+        )
+
+    def test_slash_is_not_vega_syntax(self) -> None:
+        with self.assertRaisesRegex(LexerError, "Unexpected character '/'"):
+            tokenize('myList.ekle "a" / myList.ekle "b"')
 
     def test_string_escapes(self) -> None:
         tokens = tokenize(r'yazdir "birinci\nikinci"')

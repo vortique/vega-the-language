@@ -12,18 +12,32 @@ class TokenType(str, Enum):
     """Kinds of tokens currently used by Vega."""
 
     SAYISAL = "SAYISAL"
+    DIZE = "DIZE"
     YAZDIR = "YAZDIR"
+    VERI = "VERI"
+    UZUNLUK = "UZUNLUK"
+    LISTE = "LISTE"
+    YENI = "YENI"
+    EKLE = "EKLE"
     IDENTIFIER = "IDENTIFIER"
     NUMBER = "NUMBER"
     STRING = "STRING"
     EQUAL = "EQUAL"
+    DOT = "DOT"
+    COMMA = "COMMA"
     NEWLINE = "NEWLINE"
     EOF = "EOF"
 
 
 KEYWORDS: dict[str, TokenType] = {
     "sayisal": TokenType.SAYISAL,
+    "dize": TokenType.DIZE,
     "yazdir": TokenType.YAZDIR,
+    "veri": TokenType.VERI,
+    "uzunluk": TokenType.UZUNLUK,
+    "liste": TokenType.LISTE,
+    "yeni": TokenType.YENI,
+    "ekle": TokenType.EKLE,
 }
 
 
@@ -98,6 +112,12 @@ class Lexer:
             return
         if char == "=":
             self._add_token(TokenType.EQUAL)
+            return
+        if char == ".":
+            self._add_token(TokenType.DOT)
+            return
+        if char == ",":
+            self._add_token(TokenType.COMMA)
             return
         if char in {'"', "“"}:
             self._string(char)
