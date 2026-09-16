@@ -1,1 +1,3 @@
-# vega-the-language
+# Vega the Language
+
+
