@@ -48,3 +48,41 @@ myList.ekle "Abc"
 myList.ekle 314
 myList.ekle "abc",3.14
 ```
+
+---
+
+## Çok Yakında Ekelencek
+
+#Mutlak Değer Alma
+
+mutlak(-10)
+
+#Şartlar
+
+eger a = b
+    yazdir "No 1"
+ikincil a = c
+    yazdir "No 2"
+degilse:
+    yazdir "No 3"
+
+#Fonksiyon 
+
+ata MerhabaDunya/
+    yazdir "Hello World!"
+
+MerhabaDunya/
+
+
+#Hata Yakalama
+
+tekrarla:
+        x = "Hello World!"
+hata:
+    yazdir "Hata!"
+
+#Sürüm Öğrenme
+
+yazdir surum
+
+
