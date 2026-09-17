@@ -1,0 +1,10 @@
+# İki dize parametresi alan bir fonksiyon tanımla
+belirle MesajGoster/dize baslik, dize mesaj/
+    yazdir baslik
+    yazdir mesaj
+
+# Eğik çizgili çağırma biçimi
+MesajGoster/"Vega", "Merhaba, dünya!"/
+
+# Alternatif çağırma biçimi
+MesajGoster "Bilgi", "Program tamamlandı."

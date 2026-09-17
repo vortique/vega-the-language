@@ -1,0 +1,6 @@
+# Boolean değerleri
+bool uygulamaAcik = dogru
+bool bakimModu = yanlis
+
+yazdir uygulamaAcik
+yazdir bakimModu

@@ -1,0 +1,7 @@
+# Bir liste oluştur ve yeni elemanlar ekle
+liste sayilar = liste.yeni 1,2,3
+
+sayilar.ekle 4
+sayilar.ekle 5,6
+
+yazdir sayilar

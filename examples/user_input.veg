@@ -1,3 +1,4 @@
+# Kullanıcıdan veri alma
 dize kullanıcı_mesajı = veri "Mesajını yaz: "
 
 yazdir kullanıcı_mesajı

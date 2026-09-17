@@ -1,0 +1,9 @@
+# Kullanıcıdan bir sayı al ve aralığını kontrol et
+sayisal sayi = veri "Bir sayı girin: "
+
+eger sayi > 10
+    yazdir "Sayı 10'dan büyük."
+ikincil sayi < 0
+    yazdir "Sayı negatif."
+degilse:
+    yazdir "Sayı 0 ile 10 arasında."

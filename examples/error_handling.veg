@@ -1,0 +1,5 @@
+# Tanımlanmamış değişken hatasını yakala
+dene:
+    yazdir tanimsizDeger
+yakala:
+    yazdir "Bir hata yakalandı."

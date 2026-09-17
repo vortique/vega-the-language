@@ -1,0 +1,5 @@
+# Negatif bir sayının mutlak değerini hesapla
+sayisal negatifSayi = -42
+sayisal pozitifSayi = mutlak negatifSayi
+
+yazdir pozitifSayi
