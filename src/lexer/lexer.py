@@ -13,18 +13,33 @@ class TokenType(str, Enum):
 
     SAYISAL = "SAYISAL"
     DIZE = "DIZE"
+    BOOL = "BOOL"
+    DOGRU = "DOGRU"
+    YANLIS = "YANLIS"
     YAZDIR = "YAZDIR"
     VERI = "VERI"
     UZUNLUK = "UZUNLUK"
+    MUTLAK = "MUTLAK"
     LISTE = "LISTE"
     YENI = "YENI"
     EKLE = "EKLE"
+    EGER = "EGER"
+    IKINCIL = "IKINCIL"
+    DEGILSE = "DEGILSE"
+    BELIRLE = "BELIRLE"
+    DENE = "DENE"
+    YAKALA = "YAKALA"
     IDENTIFIER = "IDENTIFIER"
     NUMBER = "NUMBER"
     STRING = "STRING"
     EQUAL = "EQUAL"
+    GREATER = "GREATER"
+    LESS = "LESS"
+    MINUS = "MINUS"
     DOT = "DOT"
     COMMA = "COMMA"
+    COLON = "COLON"
+    SLASH = "SLASH"
     NEWLINE = "NEWLINE"
     EOF = "EOF"
 
@@ -32,12 +47,22 @@ class TokenType(str, Enum):
 KEYWORDS: dict[str, TokenType] = {
     "sayisal": TokenType.SAYISAL,
     "dize": TokenType.DIZE,
+    "bool": TokenType.BOOL,
+    "dogru": TokenType.DOGRU,
+    "yanlis": TokenType.YANLIS,
     "yazdir": TokenType.YAZDIR,
     "veri": TokenType.VERI,
     "uzunluk": TokenType.UZUNLUK,
+    "mutlak": TokenType.MUTLAK,
     "liste": TokenType.LISTE,
     "yeni": TokenType.YENI,
     "ekle": TokenType.EKLE,
+    "eger": TokenType.EGER,
+    "ikincil": TokenType.IKINCIL,
+    "degilse": TokenType.DEGILSE,
+    "belirle": TokenType.BELIRLE,
+    "dene": TokenType.DENE,
+    "yakala": TokenType.YAKALA,
 }
 
 
@@ -113,11 +138,26 @@ class Lexer:
         if char == "=":
             self._add_token(TokenType.EQUAL)
             return
+        if char == ">":
+            self._add_token(TokenType.GREATER)
+            return
+        if char == "<":
+            self._add_token(TokenType.LESS)
+            return
+        if char == "-":
+            self._add_token(TokenType.MINUS)
+            return
         if char == ".":
             self._add_token(TokenType.DOT)
             return
         if char == ",":
             self._add_token(TokenType.COMMA)
+            return
+        if char == ":":
+            self._add_token(TokenType.COLON)
+            return
+        if char == "/":
+            self._add_token(TokenType.SLASH)
             return
         if char in {'"', "“"}:
             self._string(char)

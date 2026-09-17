@@ -54,6 +54,81 @@ _vega_myList.extend(['abc', 3.14])
     def test_empty_program_produces_empty_python(self) -> None:
         self.assertEqual(transpile_source("# only a comment\n"), "")
 
+    def test_transpiles_new_language_features(self) -> None:
+        python = transpile_source(
+            """bool etkin = dogru
+sayisal on = mutlak -10
+eger on > 5
+    yazdir "büyük"
+ikincil on < 0
+    yazdir "negatif"
+degilse:
+    yazdir "diğer"
+belirle selam/dize mesaj/
+    yazdir mesaj
+selam/"Merhaba"/
+dene:
+    yazdir eksik
+yakala:
+    yazdir "Hata!"
+"""
+        )
+
+        self.assertEqual(
+            python,
+            """_vega_etkin = True
+_vega_on = abs(-10)
+if (_vega_on > 5):
+    print('büyük')
+elif (_vega_on < 0):
+    print('negatif')
+else:
+    print('diğer')
+def _vega_selam(_vega_mesaj):
+    print(_vega_mesaj)
+_vega_selam('Merhaba')
+try:
+    print(_vega_eksik)
+except Exception:
+    print('Hata!')
+""",
+        )
+
+    def test_new_language_features_execute_end_to_end(self) -> None:
+        python = transpile_source(
+            """bool etkin = dogru
+sayisal on = mutlak -10
+eger etkin
+    yazdir on
+degilse:
+    yazdir 0
+belirle selam/dize mesaj/
+    yazdir mesaj
+selam "Merhaba"
+dene:
+    yazdir eksik
+yakala:
+    yazdir "Hata!"
+"""
+        )
+        output: list[object] = []
+
+        exec(python, {"print": lambda value: output.append(value)})
+
+        self.assertEqual(output, [10, "Merhaba", "Hata!"])
+
+    def test_numeric_declaration_converts_user_input(self) -> None:
+        python = transpile_source('sayisal sayi = veri "Sayı gir: "')
+        prompts: list[str] = []
+        namespace = {
+            "input": lambda prompt: prompts.append(prompt) or "12",
+        }
+
+        exec(python, namespace)
+
+        self.assertEqual(prompts, ["Sayı gir: "])
+        self.assertEqual(namespace["_vega_sayi"], 12)
+
     def test_generated_python_executes_end_to_end(self) -> None:
         python = transpile_source(
             """sayisal size = uzunluk veri "Adınız?"

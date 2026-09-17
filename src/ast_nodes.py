@@ -25,6 +25,11 @@ class StringLiteral(Expression):
 
 
 @dataclass(frozen=True, slots=True)
+class BooleanLiteral(Expression):
+    value: bool
+
+
+@dataclass(frozen=True, slots=True)
 class Identifier(Expression):
     name: str
 
@@ -37,6 +42,23 @@ class InputExpression(Expression):
 @dataclass(frozen=True, slots=True)
 class LengthExpression(Expression):
     value: Expression
+
+
+@dataclass(frozen=True, slots=True)
+class AbsoluteExpression(Expression):
+    value: Expression
+
+
+@dataclass(frozen=True, slots=True)
+class NegativeExpression(Expression):
+    value: Expression
+
+
+@dataclass(frozen=True, slots=True)
+class BinaryExpression(Expression):
+    left: Expression
+    operator: str
+    right: Expression
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,6 +77,12 @@ class NumericDeclaration(Statement):
 
 @dataclass(frozen=True, slots=True)
 class StringDeclaration(Statement):
+    name: str
+    initializer: Expression
+
+
+@dataclass(frozen=True, slots=True)
+class BooleanDeclaration(Statement):
     name: str
     initializer: Expression
 
@@ -87,17 +115,71 @@ class ExpressionStatement(Statement):
     expression: Expression
 
 
+@dataclass(frozen=True, slots=True)
+class ConditionalBranch:
+    line: int
+    column: int
+    condition: Expression
+    body: tuple[Statement, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ConditionalStatement(Statement):
+    branches: tuple[ConditionalBranch, ...]
+    else_body: tuple[Statement, ...] | None
+
+
+@dataclass(frozen=True, slots=True)
+class FunctionParameter:
+    line: int
+    column: int
+    type_name: str
+    name: str
+
+
+@dataclass(frozen=True, slots=True)
+class FunctionDeclaration(Statement):
+    name: str
+    parameters: tuple[FunctionParameter, ...]
+    body: tuple[Statement, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class FunctionCallStatement(Statement):
+    name: str
+    arguments: tuple[Expression, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class TryCatchStatement(Statement):
+    try_body: tuple[Statement, ...]
+    catch_body: tuple[Statement, ...]
+
+
 ExpressionNode: TypeAlias = (
-    NumberLiteral | StringLiteral | Identifier | InputExpression | LengthExpression
+    NumberLiteral
+    | StringLiteral
+    | BooleanLiteral
+    | Identifier
+    | InputExpression
+    | LengthExpression
+    | AbsoluteExpression
+    | NegativeExpression
+    | BinaryExpression
 )
 StatementNode: TypeAlias = (
     NumericDeclaration
     | StringDeclaration
+    | BooleanDeclaration
     | ListDeclaration
     | Assignment
     | PrintStatement
     | ListExtendStatement
     | ExpressionStatement
+    | ConditionalStatement
+    | FunctionDeclaration
+    | FunctionCallStatement
+    | TryCatchStatement
 )
 
 
@@ -109,15 +191,25 @@ class Program:
 
 
 __all__ = [
+    "AbsoluteExpression",
     "Assignment",
+    "BinaryExpression",
+    "BooleanDeclaration",
+    "BooleanLiteral",
+    "ConditionalBranch",
+    "ConditionalStatement",
     "Expression",
     "ExpressionNode",
     "ExpressionStatement",
+    "FunctionCallStatement",
+    "FunctionDeclaration",
+    "FunctionParameter",
     "Identifier",
     "InputExpression",
     "LengthExpression",
     "ListDeclaration",
     "ListExtendStatement",
+    "NegativeExpression",
     "NumberLiteral",
     "NumericDeclaration",
     "PrintStatement",
@@ -126,4 +218,5 @@ __all__ = [
     "StatementNode",
     "StringDeclaration",
     "StringLiteral",
+    "TryCatchStatement",
 ]

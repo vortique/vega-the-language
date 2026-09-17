@@ -1,10 +1,14 @@
-# Vega Dilinin Gramarı
+# Vega Dilinin Grameri
 
 ## Veri Tipleri
 
 **Sayısal/Integer** = `sayisal`
 
 **Dize/String** = `dize`
+
+**Boolean** = `bool`
+
+Boolean değerleri `dogru` ve `yanlis` olarak yazılır.
 
 ---
 
@@ -13,37 +17,57 @@
 **Değişken oluşturma/tanımlama**:
 
 ```vtl
-sayisal x = 10
+sayisal sayim = 10
 
-dize y = "Merhaba, dünya!"
+dize dizem = "Merhaba, dünya!"
+
+bool dogruDeger = dogru
+bool yanlisDeger = yanlis
 ```
 
 ---
 
-## Built-in Fonksiyonlar
+## Yerleşik Fonksiyonlar
+
+### Yorum Ekleme
 
 ```vtl
+# Bu bir yorumdur
+```
 
-# Yorum ekleme
+### Ekrana Veri Yazdırma
 
-## Ekrana veri yazdırma
-
+```vtl
 yazdir "Merhaba, dünya!"
+```
 
-## Kullanıcıdan veri alma
+### Kullanıcıdan Veri Alma
 
-x = veri "İsminiz?"
+```vtl
+dize isim = veri "İsminiz?"
+```
 
-## Karakter Hesaplama
+### Karakter Sayısını Hesaplama
 
+```vtl
 uzunluk "Merhaba, dünya!"
+```
 
-## Listeleme Yapmak
+### Mutlak Değer Alma
 
+```vtl
+sayisal on = mutlak -10
+```
+
+### Liste Oluşturma
+
+```vtl
 liste myList = liste.yeni 1,abc,3.14
+```
 
-## Listeye Eleman Ekleme
+### Listeye Eleman Ekleme
 
+```vtl
 myList.ekle "Abc"
 myList.ekle 314
 myList.ekle "abc",3.14
@@ -51,38 +75,59 @@ myList.ekle "abc",3.14
 
 ---
 
-## Çok Yakında Ekelencek
+## Şartlar (`if/elif/else`)
 
-#Mutlak Değer Alma
+Girintiler şart bloklarını belirler. `eger` ve `ikincil` satırlarında iki nokta
+isteğe bağlıdır; `degilse` satırında zorunludur.
 
-mutlak(-10)
+```vtl
+sayisal verim = veri "Sayı gir: "
 
-#Şartlar
-
-eger a = b
+eger verim > 10
     yazdir "No 1"
-ikincil a = c
+ikincil verim < 0
     yazdir "No 2"
 degilse:
     yazdir "No 3"
+```
 
-#Fonksiyon 
+---
 
-ata MerhabaDunya/
-    yazdir "Hello World!"
+## Fonksiyon Tanımlama ve Çağırma
 
-MerhabaDunya/
+Fonksiyon gövdesi girintiyle belirtilir. Parametreler `/` karakterleri arasında
+tip ve isimleriyle tanımlanır.
 
+```vtl
+belirle MerhabaDunya/dize mesaj, dize aciklama/
+    yazdir mesaj
+    yazdir aciklama
 
-#Hata Yakalama
+MerhabaDunya/"Merhaba, dünya!", "Vega'dan selamlar!"/
 
-tekrarla:
-        x = "Hello World!"
-hata:
+# Alternatif çağırma biçimi
+MerhabaDunya "Merhaba, dünya!", "Vega'dan selamlar!"
+```
+
+---
+
+## Hata Yakalama
+
+`dene` bloğunda oluşan çalışma zamanı hataları `yakala` bloğunu çalıştırır.
+
+```vtl
+dene:
+    x = "Hello World!"
+yakala:
     yazdir "Hata!"
+```
 
-#Sürüm Öğrenme
+---
 
+## Çok Yakında Eklenecek
+
+### Sürüm Bilgisini Öğrenme
+
+```vtl
 yazdir surum
-
-
+```

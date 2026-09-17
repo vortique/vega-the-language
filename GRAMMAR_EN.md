@@ -6,45 +6,128 @@
 
 **String** = `dize`
 
+**Boolean** = `bool`
+
+Boolean values are written as `dogru` and `yanlis`.
+
 ---
 
 ## Variables
 
-**Creating/declaring a variable**:
+**Creating/declaring variables**:
 
 ```vtl
-sayisal x = 10
+sayisal number = 10
 
-dize y = "Hello, world!"
+dize text = "Hello, world!"
+
+bool trueValue = dogru
+bool falseValue = yanlis
 ```
 
 ---
 
 ## Built-in Functions
 
+### Adding Comments
+
 ```vtl
+# This is a comment
+```
 
-# Adding comments
+### Printing Data to the Screen
 
-## Printing data to the screen
-
+```vtl
 yazdir "Hello, world!"
+```
 
-## Reading data from the user
+### Reading Data from the User
 
-x = veri "Your name?"
+```vtl
+dize name = veri "Your name?"
+```
 
-## Calculating Character Count
+### Calculating Character Count
 
+```vtl
 uzunluk "Hello, world!"
+```
 
-## Creating a List
+### Calculating an Absolute Value
 
+```vtl
+sayisal ten = mutlak -10
+```
+
+### Creating a List
+
+```vtl
 liste myList = liste.yeni 1,abc,3.14
+```
 
-## Adding Elements to a List
+### Adding Elements to a List
 
+```vtl
 myList.ekle "Abc"
 myList.ekle 314
 myList.ekle "abc",3.14
+```
+
+---
+
+## Conditions (`if/elif/else`)
+
+Indentation defines condition blocks. Colons are optional after `eger` and
+`ikincil`, but required after `degilse`.
+
+```vtl
+sayisal value = veri "Enter a number: "
+
+eger value > 10
+    yazdir "No 1"
+ikincil value < 0
+    yazdir "No 2"
+degilse:
+    yazdir "No 3"
+```
+
+---
+
+## Defining and Calling Functions
+
+Indentation defines the function body. Parameters are declared between `/`
+characters with their types and names.
+
+```vtl
+belirle HelloWorld/dize message, dize description/
+    yazdir message
+    yazdir description
+
+HelloWorld/"Hello, world!", "Greetings from Vega!"/
+
+# Alternative call syntax
+HelloWorld "Hello, world!", "Greetings from Vega!"
+```
+
+---
+
+## Error Handling
+
+Runtime errors in the `dene` block cause the `yakala` block to run.
+
+```vtl
+dene:
+    x = "Hello World!"
+yakala:
+    yazdir "Error!"
+```
+
+---
+
+## Coming Soon
+
+### Printing Version Information
+
+```vtl
+yazdir surum
 ```

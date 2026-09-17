@@ -100,9 +100,54 @@ class LexerTests(unittest.TestCase):
             ],
         )
 
-    def test_slash_is_not_vega_syntax(self) -> None:
-        with self.assertRaisesRegex(LexerError, "Unexpected character '/'"):
-            tokenize('myList.ekle "a" / myList.ekle "b"')
+    def test_boolean_and_control_flow_tokens(self) -> None:
+        tokens = tokenize(
+            "bool sonuc = dogru\neger sonuc:\n    sayisal x = mutlak -10"
+        )
+
+        self.assertEqual(
+            [token.type for token in tokens],
+            [
+                TokenType.BOOL,
+                TokenType.IDENTIFIER,
+                TokenType.EQUAL,
+                TokenType.DOGRU,
+                TokenType.NEWLINE,
+                TokenType.EGER,
+                TokenType.IDENTIFIER,
+                TokenType.COLON,
+                TokenType.NEWLINE,
+                TokenType.SAYISAL,
+                TokenType.IDENTIFIER,
+                TokenType.EQUAL,
+                TokenType.MUTLAK,
+                TokenType.MINUS,
+                TokenType.NUMBER,
+                TokenType.EOF,
+            ],
+        )
+
+    def test_function_and_error_handling_tokens(self) -> None:
+        tokens = tokenize("belirle selam/dize mesaj/\ndene:\nyakala:")
+
+        self.assertEqual(
+            [token.type for token in tokens],
+            [
+                TokenType.BELIRLE,
+                TokenType.IDENTIFIER,
+                TokenType.SLASH,
+                TokenType.DIZE,
+                TokenType.IDENTIFIER,
+                TokenType.SLASH,
+                TokenType.NEWLINE,
+                TokenType.DENE,
+                TokenType.COLON,
+                TokenType.NEWLINE,
+                TokenType.YAKALA,
+                TokenType.COLON,
+                TokenType.EOF,
+            ],
+        )
 
     def test_string_escapes(self) -> None:
         tokens = tokenize(r'yazdir "birinci\nikinci"')
