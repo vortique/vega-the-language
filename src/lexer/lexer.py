@@ -29,13 +29,18 @@ class TokenType(str, Enum):
     BELIRLE = "BELIRLE"
     DENE = "DENE"
     YAKALA = "YAKALA"
+    ARALIK = "ARALIK"
+    ARTIR = "ARTIR"
+    AZALT = "AZALT"
     IDENTIFIER = "IDENTIFIER"
     NUMBER = "NUMBER"
     STRING = "STRING"
     EQUAL = "EQUAL"
     GREATER = "GREATER"
     LESS = "LESS"
+    PLUS = "PLUS"
     MINUS = "MINUS"
+    STAR = "STAR"
     DOT = "DOT"
     COMMA = "COMMA"
     COLON = "COLON"
@@ -63,6 +68,9 @@ KEYWORDS: dict[str, TokenType] = {
     "belirle": TokenType.BELIRLE,
     "dene": TokenType.DENE,
     "yakala": TokenType.YAKALA,
+    "aralik": TokenType.ARALIK,
+    "artir": TokenType.ARTIR,
+    "azalt": TokenType.AZALT,
 }
 
 
@@ -144,8 +152,14 @@ class Lexer:
         if char == "<":
             self._add_token(TokenType.LESS)
             return
+        if char == "+":
+            self._add_token(TokenType.PLUS)
+            return
         if char == "-":
             self._add_token(TokenType.MINUS)
+            return
+        if char == "*":
+            self._add_token(TokenType.STAR)
             return
         if char == ".":
             self._add_token(TokenType.DOT)

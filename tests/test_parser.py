@@ -18,12 +18,14 @@ from src.ast_nodes import (
     FunctionCallStatement,
     FunctionDeclaration,
     Identifier,
+    IncrementStatement,
     InputExpression,
     LengthExpression,
     ListDeclaration,
     ListExtendStatement,
     NumericDeclaration,
     PrintStatement,
+    RangeExpression,
     StringDeclaration,
     TryCatchStatement,
 )
@@ -135,6 +137,54 @@ MerhabaDunya "Merhaba", "Selam"
             [argument.value for argument in program.statements[1].arguments],
             [argument.value for argument in program.statements[2].arguments],
         )
+
+    def test_arithmetic_uses_standard_precedence(self) -> None:
+        declaration = parse(
+            tokenize("sayisal sonuc = 2 + 3 * 4 - 8 / 2")
+        ).statements[0]
+
+        self.assertIsInstance(declaration.initializer, BinaryExpression)
+        self.assertEqual(declaration.initializer.operator, "-")
+        self.assertIsInstance(declaration.initializer.left, BinaryExpression)
+        self.assertEqual(declaration.initializer.left.operator, "+")
+        self.assertEqual(declaration.initializer.left.right.operator, "*")
+        self.assertEqual(declaration.initializer.right.operator, "/")
+
+    def test_increment_decrement_and_range(self) -> None:
+        program = parse(
+            tokenize(
+                "sayisal x = 10\n"
+                "x artir\n"
+                "x azalt\n"
+                "liste sayilar = aralik 0, 10\n"
+                "liste digerleri = aralik/10, 20/\n"
+            )
+        )
+
+        self.assertIsInstance(program.statements[1], IncrementStatement)
+        self.assertEqual(program.statements[1].amount, 1)
+        self.assertEqual(program.statements[2].amount, -1)
+        self.assertIsInstance(program.statements[3], ListDeclaration)
+        self.assertIsInstance(program.statements[3].initializer, RangeExpression)
+        self.assertIsInstance(program.statements[4].initializer, RangeExpression)
+
+    def test_builtins_and_list_methods_accept_both_call_forms(self) -> None:
+        program = parse(
+            tokenize(
+                'yazdir/"bir"/\n'
+                'yazdir "iki"\n'
+                'sayisal a = mutlak/-10/\n'
+                'sayisal b = uzunluk/"Vega"/\n'
+                'liste xs = liste.yeni/1,2/\n'
+                'xs.ekle/3,4/\n'
+            )
+        )
+
+        self.assertEqual(len(program.statements), 6)
+        self.assertIsInstance(program.statements[0], PrintStatement)
+        self.assertIsInstance(program.statements[1], PrintStatement)
+        self.assertEqual(len(program.statements[4].elements), 2)
+        self.assertEqual(len(program.statements[5].values), 2)
 
     def test_try_catch_statement(self) -> None:
         statement = parse(

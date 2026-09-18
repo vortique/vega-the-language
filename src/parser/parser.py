@@ -18,15 +18,18 @@ from src.ast_nodes import (
     FunctionDeclaration,
     FunctionParameter,
     Identifier,
+    IncrementStatement,
     InputExpression,
     LengthExpression,
     ListDeclaration,
     ListExtendStatement,
+    ListLiteral,
     NegativeExpression,
     NumberLiteral,
     NumericDeclaration,
     PrintStatement,
     Program,
+    RangeExpression,
     StatementNode,
     StringDeclaration,
     StringLiteral,
@@ -88,7 +91,9 @@ class Parser:
         if self._match(TokenType.YAZDIR):
             keyword = self._previous()
             statement = PrintStatement(
-                keyword.line, keyword.column, self._expression()
+                keyword.line,
+                keyword.column,
+                self._call_argument("'yazdir'"),
             )
             self._end_statement()
             return statement
@@ -98,7 +103,15 @@ class Parser:
             return self._function_declaration(self._previous())
         if self._match(TokenType.DENE):
             return self._try_catch_statement(self._previous())
-        if self._check(TokenType.UZUNLUK) or self._check(TokenType.MUTLAK):
+        if any(
+            self._check(token_type)
+            for token_type in (
+                TokenType.UZUNLUK,
+                TokenType.MUTLAK,
+                TokenType.VERI,
+                TokenType.ARALIK,
+            )
+        ):
             token = self._peek()
             statement = ExpressionStatement(
                 token.line, token.column, self._expression()
@@ -140,14 +153,11 @@ class Parser:
     def _list_declaration(self, keyword: Token) -> ListDeclaration:
         name = self._consume(TokenType.IDENTIFIER, "Expected a list name")
         self._consume(TokenType.EQUAL, "Expected '=' after list name")
-        self._consume(TokenType.LISTE, "Expected 'liste.yeni' after '='")
-        self._consume(TokenType.DOT, "Expected '.' after 'liste'")
-        self._consume(TokenType.YENI, "Expected 'yeni' after 'liste.'")
         statement = ListDeclaration(
             keyword.line,
             keyword.column,
             name.lexeme,
-            self._expression_list("Expected at least one list element"),
+            self._expression(),
         )
         self._end_statement()
         return statement
@@ -159,11 +169,22 @@ class Parser:
             )
         elif self._match(TokenType.DOT):
             self._consume(TokenType.EKLE, "Expected 'ekle' after list name and '.'")
+            delimited = self._match(TokenType.SLASH)
             statement = ListExtendStatement(
                 name.line,
                 name.column,
                 name.lexeme,
                 self._expression_list("Expected at least one value after 'ekle'"),
+            )
+            if delimited:
+                self._consume(TokenType.SLASH, "Expected '/' after values")
+        elif self._match(TokenType.ARTIR):
+            statement = IncrementStatement(
+                name.line, name.column, name.lexeme, 1
+            )
+        elif self._match(TokenType.AZALT):
+            statement = IncrementStatement(
+                name.line, name.column, name.lexeme, -1
             )
         elif self._match(TokenType.SLASH):
             arguments: tuple[ExpressionNode, ...] = ()
@@ -302,10 +323,40 @@ class Parser:
         return self._comparison()
 
     def _comparison(self) -> ExpressionNode:
-        expression = self._unary()
+        expression = self._term()
 
         while self._match(TokenType.GREATER, TokenType.LESS):
             operator = self._previous()
+            expression = BinaryExpression(
+                operator.line,
+                operator.column,
+                expression,
+                operator.lexeme,
+                self._term(),
+            )
+
+        return expression
+
+    def _term(self) -> ExpressionNode:
+        expression = self._factor()
+
+        while self._match(TokenType.PLUS, TokenType.MINUS):
+            operator = self._previous()
+            expression = BinaryExpression(
+                operator.line,
+                operator.column,
+                expression,
+                operator.lexeme,
+                self._factor(),
+            )
+
+        return expression
+
+    def _factor(self) -> ExpressionNode:
+        expression = self._unary()
+
+        while self._check(TokenType.STAR) or self._slash_starts_division():
+            operator = self._advance()
             expression = BinaryExpression(
                 operator.line,
                 operator.column,
@@ -322,13 +373,28 @@ class Parser:
             return NegativeExpression(token.line, token.column, self._unary())
         if self._match(TokenType.MUTLAK):
             token = self._previous()
-            return AbsoluteExpression(token.line, token.column, self._unary())
+            return AbsoluteExpression(
+                token.line, token.column, self._call_argument("'mutlak'", unary=True)
+            )
         if self._match(TokenType.VERI):
             token = self._previous()
-            return InputExpression(token.line, token.column, self._unary())
+            return InputExpression(
+                token.line, token.column, self._call_argument("'veri'", unary=True)
+            )
         if self._match(TokenType.UZUNLUK):
             token = self._previous()
-            return LengthExpression(token.line, token.column, self._unary())
+            return LengthExpression(
+                token.line, token.column, self._call_argument("'uzunluk'", unary=True)
+            )
+        if self._match(TokenType.ARALIK):
+            token = self._previous()
+            delimited = self._match(TokenType.SLASH)
+            minimum = self._expression()
+            self._consume(TokenType.COMMA, "Expected ',' between range bounds")
+            maximum = self._expression()
+            if delimited:
+                self._consume(TokenType.SLASH, "Expected '/' after range bounds")
+            return RangeExpression(token.line, token.column, minimum, maximum)
         return self._primary()
 
     def _primary(self) -> ExpressionNode:
@@ -347,8 +413,43 @@ class Parser:
         if self._match(TokenType.IDENTIFIER):
             token = self._previous()
             return Identifier(token.line, token.column, token.lexeme)
+        if self._match(TokenType.LISTE):
+            return self._list_literal(self._previous())
 
         raise self._error(self._peek(), "Expected an expression")
+
+    def _list_literal(self, keyword: Token) -> ListLiteral:
+        self._consume(TokenType.DOT, "Expected '.' after 'liste'")
+        self._consume(TokenType.YENI, "Expected 'yeni' after 'liste.'")
+        delimited = self._match(TokenType.SLASH)
+        elements = self._expression_list("Expected at least one list element")
+        if delimited:
+            self._consume(TokenType.SLASH, "Expected '/' after list elements")
+        return ListLiteral(keyword.line, keyword.column, elements)
+
+    def _call_argument(self, function_name: str, unary: bool = False) -> ExpressionNode:
+        delimited = self._match(TokenType.SLASH)
+        argument = self._expression() if delimited or not unary else self._unary()
+        if delimited:
+            self._consume(TokenType.SLASH, f"Expected '/' after {function_name} argument")
+        return argument
+
+    def _slash_starts_division(self) -> bool:
+        if not self._check(TokenType.SLASH):
+            return False
+        return self._peek_next().type in {
+            TokenType.MINUS,
+            TokenType.MUTLAK,
+            TokenType.VERI,
+            TokenType.UZUNLUK,
+            TokenType.ARALIK,
+            TokenType.NUMBER,
+            TokenType.STRING,
+            TokenType.DOGRU,
+            TokenType.YANLIS,
+            TokenType.IDENTIFIER,
+            TokenType.LISTE,
+        }
 
     def _consume_declaration_type(self) -> Token:
         if self._peek().type in DECLARATION_TYPES:
@@ -391,6 +492,11 @@ class Parser:
 
     def _peek(self) -> Token:
         return self.tokens[self.current]
+
+    def _peek_next(self) -> Token:
+        if self.current + 1 >= len(self.tokens):
+            return self.tokens[-1]
+        return self.tokens[self.current + 1]
 
     def _previous(self) -> Token:
         return self.tokens[self.current - 1]

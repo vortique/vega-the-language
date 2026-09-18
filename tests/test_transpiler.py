@@ -150,6 +150,27 @@ yazdir values
         self.assertEqual(prompts, ["Adınız?"])
         self.assertEqual(output, [4, [4, 2, 3]])
 
+    def test_math_range_increment_and_call_forms_execute_end_to_end(self) -> None:
+        python = transpile_source(
+            '''sayisal sonuc = 2 + 3 * 4 - 8 / 2
+sayisal x = 10
+x artir
+x azalt
+liste sayilar = aralik 0, 10
+yazdir/sonuc/
+yazdir sayilar
+yazdir/10 / 2/
+liste eklenenler = liste.yeni/1,2/
+eklenenler.ekle/3,4/
+yazdir/eklenenler/
+'''
+        )
+        output: list[object] = []
+
+        exec(python, {"print": lambda value: output.append(value)})
+
+        self.assertEqual(output, [10.0, list(range(1, 11)), 5.0, [1, 2, 3, 4]])
+
 
 if __name__ == "__main__":
     unittest.main()

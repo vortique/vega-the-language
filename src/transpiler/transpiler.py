@@ -14,15 +14,18 @@ from src.ast_nodes import (
     FunctionCallStatement,
     FunctionDeclaration,
     Identifier,
+    IncrementStatement,
     InputExpression,
     LengthExpression,
     ListDeclaration,
     ListExtendStatement,
+    ListLiteral,
     NegativeExpression,
     NumberLiteral,
     NumericDeclaration,
     PrintStatement,
     Program,
+    RangeExpression,
     Statement,
     StringDeclaration,
     StringLiteral,
@@ -58,13 +61,14 @@ class Transpiler:
                 initializer = f"int({initializer})"
             return [f"{prefix}{name} = {initializer}"]
         if isinstance(statement, ListDeclaration):
-            elements = ", ".join(
-                self._expression(item) for item in statement.elements
-            )
-            return [f"{prefix}{self._name(statement.name)} = [{elements}]"]
+            initializer = self._expression(statement.initializer)
+            return [f"{prefix}{self._name(statement.name)} = {initializer}"]
         if isinstance(statement, Assignment):
             value = self._expression(statement.value)
             return [f"{prefix}{self._name(statement.name)} = {value}"]
+        if isinstance(statement, IncrementStatement):
+            operator = "+=" if statement.amount > 0 else "-="
+            return [f"{prefix}{self._name(statement.name)} {operator} 1"]
         if isinstance(statement, PrintStatement):
             return [f"{prefix}print({self._expression(statement.value)})"]
         if isinstance(statement, ListExtendStatement):
@@ -148,6 +152,15 @@ class Transpiler:
             left = self._expression(expression.left)
             right = self._expression(expression.right)
             return f"({left} {expression.operator} {right})"
+        if isinstance(expression, ListLiteral):
+            elements = ", ".join(
+                self._expression(item) for item in expression.elements
+            )
+            return f"[{elements}]"
+        if isinstance(expression, RangeExpression):
+            minimum = self._expression(expression.minimum)
+            maximum = self._expression(expression.maximum)
+            return f"list(range(({minimum} + 1), ({maximum} + 1)))"
         raise TypeError(f"Unsupported Vega expression: {type(expression).__name__}")
 
     @staticmethod

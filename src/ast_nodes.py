@@ -62,6 +62,17 @@ class BinaryExpression(Expression):
 
 
 @dataclass(frozen=True, slots=True)
+class ListLiteral(Expression):
+    elements: tuple[Expression, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class RangeExpression(Expression):
+    minimum: Expression
+    maximum: Expression
+
+
+@dataclass(frozen=True, slots=True)
 class Statement:
     """Base class for statements with a one-based source location."""
 
@@ -90,13 +101,25 @@ class BooleanDeclaration(Statement):
 @dataclass(frozen=True, slots=True)
 class ListDeclaration(Statement):
     name: str
-    elements: tuple[Expression, ...]
+    initializer: Expression
+
+    @property
+    def elements(self) -> tuple[Expression, ...]:
+        if isinstance(self.initializer, ListLiteral):
+            return self.initializer.elements
+        return ()
 
 
 @dataclass(frozen=True, slots=True)
 class Assignment(Statement):
     name: str
     value: Expression
+
+
+@dataclass(frozen=True, slots=True)
+class IncrementStatement(Statement):
+    name: str
+    amount: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -166,6 +189,8 @@ ExpressionNode: TypeAlias = (
     | AbsoluteExpression
     | NegativeExpression
     | BinaryExpression
+    | ListLiteral
+    | RangeExpression
 )
 StatementNode: TypeAlias = (
     NumericDeclaration
@@ -173,6 +198,7 @@ StatementNode: TypeAlias = (
     | BooleanDeclaration
     | ListDeclaration
     | Assignment
+    | IncrementStatement
     | PrintStatement
     | ListExtendStatement
     | ExpressionStatement
@@ -205,15 +231,18 @@ __all__ = [
     "FunctionDeclaration",
     "FunctionParameter",
     "Identifier",
+    "IncrementStatement",
     "InputExpression",
     "LengthExpression",
     "ListDeclaration",
     "ListExtendStatement",
+    "ListLiteral",
     "NegativeExpression",
     "NumberLiteral",
     "NumericDeclaration",
     "PrintStatement",
     "Program",
+    "RangeExpression",
     "Statement",
     "StatementNode",
     "StringDeclaration",

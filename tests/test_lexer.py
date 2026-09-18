@@ -149,6 +149,39 @@ class LexerTests(unittest.TestCase):
             ],
         )
 
+    def test_arithmetic_increment_and_range_tokens(self) -> None:
+        tokens = tokenize(
+            "sayisal x = 2 + 3 * 4 / 2\nx artir\nx azalt\naralik 0, 10"
+        )
+
+        self.assertEqual(
+            [token.type for token in tokens],
+            [
+                TokenType.SAYISAL,
+                TokenType.IDENTIFIER,
+                TokenType.EQUAL,
+                TokenType.NUMBER,
+                TokenType.PLUS,
+                TokenType.NUMBER,
+                TokenType.STAR,
+                TokenType.NUMBER,
+                TokenType.SLASH,
+                TokenType.NUMBER,
+                TokenType.NEWLINE,
+                TokenType.IDENTIFIER,
+                TokenType.ARTIR,
+                TokenType.NEWLINE,
+                TokenType.IDENTIFIER,
+                TokenType.AZALT,
+                TokenType.NEWLINE,
+                TokenType.ARALIK,
+                TokenType.NUMBER,
+                TokenType.COMMA,
+                TokenType.NUMBER,
+                TokenType.EOF,
+            ],
+        )
+
     def test_string_escapes(self) -> None:
         tokens = tokenize(r'yazdir "birinci\nikinci"')
 
